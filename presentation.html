@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Elixir - briefly</title>
+    <meta charset="utf-8">
+    <style>
+      @import url(https://fonts.googleapis.com/css?family=Yanone+Kaffeesatz);
+      @import url(https://fonts.googleapis.com/css?family=IBM+Plex+Sans+Condensed);
+      @import url(https://cdn.jsdelivr.net/gh/tonsky/FiraCode@1.206/distr/fira_code.css);
+
+      body { font-family: 'IBM Plex Sans Condensed'; }
+      h1, h2, h3, h4 {
+        font-family: 'Yanone Kaffeesatz';
+        font-weight: normal;
+        margin-bottom: 0;
+        margin-top: 10px;
+        font-variant-ligatures: normal;
+      }
+      /* #4A235D is a good elixir purple */
+      h1 { color: #4A235D; }
+
+      h1 { font-size: 3.5em; }
+      h2 { font-size: 3em; }
+      h3 { font-size: 1.6em; opacity: 0.8; }
+
+      /* h2 is used as a second heading on a slide. give it space */
+      h2 { margin-top: 2em; }
+
+      /* custom, prettier list numbers */
+      ol {
+        list-style: none;
+        counter-reset: list-counter;
+      }
+      ol > li {
+        counter-increment: list-counter;
+      }
+      ol li:before {
+        content: counter(list-counter) ". ";
+        color: #4A235D;
+        font-weight: bold;
+        font-size: 1.1em;
+      }
+      li { margin: 0.5em 0; }
+
+      .remark-code,
+      .remark-inline-code,
+      .error,
+      .warning {
+        font-family: 'Fira Code';
+        font-size: 0.8em;
+      }
+
+      .inverse {
+        background: #4A235D;
+        color: #eaeaea;
+        text-shadow: 0 0 20px #333;
+      }
+      .inverse h1,
+      .inverse h2,
+      .inverse p {
+        color: #eaeaea;
+      }
+
+      p { margin: 0; } /* paragraphs with floats cause unwanted gaps */
+      .right.logo { float: right; clear: none; width: 20%; height: 20%; }
+      .logo img {
+        max-height: 100%;
+        max-width: 100%;
+      }
+
+      h4#elixir, #ruby {
+        margin-top: 2em;
+        margin-bottom: 1em;
+      }
+
+      h4#elixir:before,
+      h4#ruby:before {
+        background-size: contain;
+        height: 1.2em;
+        width: 1.1em;
+        vertical-align: middle;
+        margin-top: -0.3em;
+        margin-right: 0.4em;
+        display: inline-block;
+        content: "";
+      }
+
+      h4#elixir:before { background: no-repeat center/80% url(images/elixir-logo.png); }
+      h4#ruby:before { background: no-repeat center/80% url(images/ruby-logo.png); }
+
+      .cols { display: flex; justify-content: space-around; }
+      .cols > .col { flex: 1; }
+
+      code.remark-inline-code { background: #eaeaea; padding: 0 0.2em; }
+
+      .error,
+      .warning {
+        padding: 0.5em;
+        display: block;
+        background-color: #F0F0F0;
+      }
+
+      .error { color: red; }
+      .warning { color: darkorange; }
+
+      blockquote {
+        background-color: #eee;
+        font-style: italic;
+        margin: 0;
+        opacity: 0.7;
+        padding: 0.5em;
+        font-size: 0.8em;
+      }
+
+      .table { margin-top: 1em; }
+      .table th { text-align: left; }
+      .padded.table th,
+      .padded.table td {
+        padding: 0.5em;
+      }
+      .table table {
+        border-collapse: collapse;
+      }
+      .striped.table table tbody tr:nth-child(even) { background-color: #fafafa }
+      .striped.table th,
+      .striped.table td {
+        border-bottom: solid 1px #999;
+      }
+      .full.table table {
+        width: 100%;
+      }
+      .table table thead tr { background-color: #eee }
+    </style>
+  </head>
+  <body>
+    <textarea id="source">
+
+class: center, middle
+
+# Elixir - A Crash Course
+
+---
+
+# Agenda
+
+0. Meta - About this presentation
+1. What is Elixir?
+2. Functional vs Object-Oriented
+3. Syntax
+4. Conventions
+5. Tools, Frameworks, Libraries
+6. Bonus
+
+---
+# About this talk
+
+* Higher level
+* Get familiar with
+  * Terms
+  * Concepts
+  * Tools
+
+--
+
+* Get excited? 😬
+
+---
+class: center, middle, inverse
+
+# What is Elixir?
+
+---
+template: default
+layout: true
+
+### What is Elixir?
+
+---
+
+
+# But first -- what's Erlang?
+
+.right.logo[![Erlang logo](images/erlang-logo.png)]
+
+* Developed by Ericsson in 1986 🇸🇪
+* Platform for telecom equipment
+* Open-sourced in 1998
+* Maintained by Ericsson
+
+--
+
+## Why?
+
+* Distributed
+* Real-time system
+* Fault-tolerant
+
+---
+
+# And what's OTP?
+
+* Open Telecom Platform
+* Not specific to telecom
+* Core libraries and tools
+* Written in Erlang
+* Runs on the BEAM virtual machine
+
+???
+Bogdan or Björns's Erlang Abstract Machine
+
+---
+
+# Elixir
+
+.right.logo[![Erlang logo](images/elixir-logo.png)]
+
+* Compiled
+* Functional
+* Strongly typed
+* Runs on the BEAM
+* Created by José Valim in 2011 🇧🇷
+
+
+---
+class: center, middle, inverse
+layout: false
+
+# Functional vs Object-oriented
+---
+template: default
+layout: true
+
+### Functional vs Object-oriented
+---
+class: center, middle
+
+# Let data be data
+
+???
+
+* Data doesn't have behavior
+
+---
+
+# Transformation, not mutation
+
+#### Ruby
+
+```ruby
+name = "BJÖRN"
+
+name.downcase!
+=> "björn"
+
+name
+=> "björn"
+```
+
+#### Elixir
+
+```elixir
+name = "BJÖRN"
+
+String.downcase(name)
+=> "björn"
+
+name
+=> "BJÖRN"
+```
+
+---
+
+# Explicit over implicit
+
+#### Ruby
+
+```ruby
+parse(File.read("src.txt").lines.first.strip)
+```
+
+#### Elixir
+
+```elixir
+"src.txt"
+|> File.read!
+|> String.split("\n")
+|> Enum.at(0)
+|> String.trim
+|> String.upcase
+|> parse()
+```
+
+---
+class: center, middle, inverse
+layout: false
+
+# Syntax
+
+---
+template: default
+layout: true
+
+### Syntax
+
+---
+
+# Comparison of types
+
+
+.cols[
+.col[
+#### Ruby
+]
+.col[
+#### Elixir
+]
+]
+
+--
+
+.cols[
+.col[
+`Hash`
+```ruby
+{ id: 1, name: "Bob" }
+```
+]
+.col[
+`Map`
+```elixir
+%{ id: 1, name: "Bob" }
+```
+]
+]
+
+--
+
+.cols[
+.col[
+`Array`
+```ruby
+[1, 2, "three"]
+```
+]
+.col[
+`List` *
+```elixir
+[1, 2, "three"]
+```
+]
+]
+
+--
+
+.cols[
+.col[
+`Symbol`
+```ruby
+:admin
+```
+]
+.col[
+`Atom`
+```elixir
+:admin
+```
+]
+]
+
+
+--
+
+.cols[
+.col[
+*none*
+]
+.col[
+`Tuple`
+```elixir
+{:ok, "Bob"}
+```
+]
+]
+
+---
+
+# Comparison of types
+
+#### Ruby
+
+```ruby
+User = Struct.new(:id, :name, :admin)
+
+bob = User.new(1, "Bob", true)
+```
+
+#### Elixir
+
+```elixir
+defmodule User
+  defstruct :id, :name, :admin
+end
+
+bob = %User{id: 1, name: "Bob", admin: true}
+```
+
+---
+
+# Pattern matching
+
+--
+
+```elixir
+name = "Bob"
+name
+=> "Bob"
+```
+
+--
+
+```elixir
+%{admin: true} = %{name: "Bob", admin: true}
+=> %{admin: true, name: "Bob"}
+```
+
+--
+
+```elixir
+%{admin: false} = %{name: "Bob", admin: true}
+```
+
+--
+
+.error[
+** (MatchError) no match of right hand side value: %{admin: true, name: "Bob"}
+]
+
+---
+
+template: default
+layout: true
+
+### Syntax - Pattern Matching
+
+---
+
+# Destructuring
+
+```elixir
+%{name: name} = %{name: "Bob", admin: true}
+```
+--
+```elixir
+name
+=> "Bob"
+```
+
+---
+
+# Pinning
+
+```elixir
+name = "Steve"
+%{name: name} = %{name: "Bob", admin: true}
+```
+--
+```elixir
+name
+=> "Bob"
+```
+
+```elixir
+name = "Steve"
+%{name: ^name} = %{name: "Bob", admin: true}
+```
+--
+
+.error[
+** (MatchError) no match of right hand side value: %{admin: true, name: "Bob"}
+]
+
+---
+
+# Underscore - Lone `_`
+
+--
+
+* Wildcard
+* Value is ignored
+* Can't be referenced
+
+--
+
+```elixir
+_ = %{name: "Bob", admin: true}
+_
+```
+.error[
+** (CompileError) iex:13: invalid use of \_. "\_" represents a value to be ignored
+in a pattern and cannot be used in expressions
+]
+
+---
+
+# Underscore - prefix `_var`
+
+--
+
+* Value is assigned
+* But should be ignored
+
+--
+
+```elixir
+_bob = %{name: "Bob", admin: true}
+_bob
+```
+
+--
+
+.warning[
+warning: the underscored variable "_bob" is used after being set. A leading underscore indicates that the value of the variable should be ignored. If this is intended please rename the variable to remove the underscore
+]
+
+---
+
+# Underscore - prefix `_var`
+
+* Compiler detects unused variables and warns
+
+--
+
+```elixir
+def show(conn, params) do
+  text(conn, "OK")
+end
+```
+
+--
+
+.warning[
+warning: variable "params" is unused (if the variable is not meant to be used, prefix it with an underscore)
+]
+
+--
+
+***
+
+```elixir
+*def show(conn, _params) do
+  text(conn, "OK")
+end
+```
+
+# 👍
+
+---
+
+# Method arguments
+
+--
+
+#### Ruby
+
+```ruby
+def can_edit?(user, record)
+  return false if user.nil?
+  return false unless user.is_a?(User)
+  return true if user.admin?
+  record.owner_id == user.id
+end
+```
+
+--
+
+#### Elixir
+
+```elixir
+def can_edit?(%User{admin: true}, _),      do: true
+def can_edit?(%User{id: uid}, %{id: rid}), do: uid == rid
+def can_edit?(_),                          do: false
+```
+
+---
+
+# Guards
+
+--
+
+#### Ruby
+
+```ruby
+def find_user(key)
+  if key.is_a?(String)
+    User.find_by(email: key)
+  elsif key.is_a?(Integer)
+    User.find(key)
+  else
+    raise ArgumentError, "Don't know how to find a user by #{ key.class }"
+  end
+end
+```
+
+--
+
+#### Elixir
+
+```elixir
+def find_user(key) when is_number(key), do: User.find(key)
+def find_user(key) when is_binary(key), do: User.find_by(email: key)
+```
+
+---
+
+# Guards
+
+> User can't order more than 10 or more than we have in stock
+
+--
+
+#### Ruby
+
+```ruby
+def valid_quantity?(qty, available)
+  return false if qty < 0
+  return false if qty > 10
+  amount <= available
+end
+```
+
+--
+
+#### Elixir
+
+```elixir
+def valid_quantity?(amount, _) when amount < 0,  do: false
+def valid_quantity?(amount, _) when amount > 10, do: false
+def valid_quantity?(amount, available),          do: amount <= available
+```
+
+---
+
+template: default
+layout: true
+
+### Syntax - Pipe
+
+---
+
+# Pipe `|>`
+
+--
+
+* Addresses nesting mess with functional programming
+* Send value as first function argument
+* Output of one function is the first argument for the next
+
+--
+
+#### ☹️
+
+```elixir
+parse(String.trim(Enum.at(String.split(File.read!("src.txt"), "\n"), 0)))
+```
+
+--
+
+#### 🙂
+
+```elixir
+"src.txt"
+|> File.read!
+|> String.split("\n")
+|> Enum.at(0)
+|> String.trim
+|> parse()
+```
+
+--
+
+```elixir
+"src.txt" |> File.read! |> String.split("\n") |> Enum.at(0) |> String.trim |> parse()
+```
+
+---
+layout: false
+class: center, middle, inverse
+
+# Conventions
+
+---
+template: default
+layout: true
+
+### Conventions
+
+---
+
+# Return values
+
+> Common patterns when there may be side effects
+
+--
+
+#### NOOP - `:ok`
+
+```elixir
+File.touch("/tmp/log.txt")
+=> :ok
+```
+
+--
+
+#### Fetch - `{:ok, data}`
+
+```elixir
+File.read("src.txt")
+=> {:ok, "file contents"}
+```
+
+---
+
+# Errors - avoid `raise`
+
+--
+
+* `raise`d errors are local to their process and will crash it
+* They break pipelines
+* Usually easier to deal with errors as data
+* Use `raise` when it *should* crash a process
+
+
+---
+
+# Errors - `{:error, reason}`
+
+```elixir
+File.read("src.txt")
+=> {:ok, "file contents"}
+```
+
+--
+
+```elixir
+File.read("/nope")
+=> {:error, :enoent}
+```
+
+---
+
+# Errors - `!` methods
+
+```elixir
+File.read!("src.txt")
+=> "file contents"
+```
+
+--
+
+```elixir
+File.read!("/nope")
+```
+.error[** (File.Error) could not read file "/nope": no such file or directory]
+
+---
+layout: false
+class: center, middle, inverse
+
+# Tools, Frameworks, Libraries
+
+---
+template: default
+layout: true
+
+### Tools, Frameworks, Libraries
+
+---
+
+# Tools
+
+.full.striped.padded.table[
+| Ruby | Elixir |
+| ---  | --- |
+| gems | hex |
+| `rake` | `mix` |
+| `irb` | `iex` |
+| `binding.pry` | `IEX.pry` |
+]
+
+---
+
+# Frameworks and Libraries
+
+.full.striped.padded.table[
+| Ruby | Elixir |
+| ---  | --- |
+| Rails | Phoenix |
+| ActiveRecord | Ecto |
+| MiniTest | ExUnit |
+| Yard | ExDoc |
+| Rubocop | Credo |
+| HTTParty | Tesla |
+]
+
+---
+layout: false
+class: center, middle, inverse
+
+# Bonus
+
+---
+template: default
+layout: true
+
+### Bonus
+
+---
+
+# Doc Tests
+
+--
+
+```elixir
+@doc """
+Indicates if the \`quantity` requested is valid given constraints and how many
+of the product are \`available` to be purchased.
+
+#### Example:
+  iex> Order.valid_quantity?(-1, 10)
+  false
+
+  iex> Order.valid_quantity?(900, 10)
+  false
+
+  iex> Order.valid_quantity?(5, 10)
+  true
+"""
+def valid_quantity?(quantity, _) when quantity < 0,  do: false
+def valid_quantity?(quantity, _) when quantity > 10, do: false
+def valid_quantity?(quantity, available) do
+  quantity <= available
+end
+```
+
+--
+
+```elixir
+defmodule OrderTest do
+  use ExUnit.case
+  doctest Order
+end
+```
+
+---
+
+# Type Specs
+
+```elixir
+defmodule Project do
+  @spec percent_complete(integer(), integer()) :: non_neg_integer()
+  def percent_complete(completed_tasks, total_tasks) do
+    completed_tasks / total_tasks * 100
+  end
+end
+```
+
+### Dialyzer
+
+```bash
+mix dialyzer
+```
+
+--
+
+.error[
+The @spec for the function does not match the success typing of the function.
+
+Function:
+Project.percent_complete/2
+
+Success typing:
+@spec percent_complete(number(), number()) :: float()
+]
+
+---
+
+# Metaprogramming
+
+---
+
+# Protocols and Behaviours
+
+---
+
+# Supervision
+
+---
+
+# Parallel Processing
+
+---
+
+layout: false
+class: center, middle, inverse
+
+# Thank You!
+
+---
+
+    </textarea>
+    <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+    <script>
+      var slideshow = remark.create({
+        highlightLines: true,
+        highlightSpans: true,
+        highlightStyle: "solarized-light"
+      });
+    </script>
+  </body>
+</html>
