@@ -500,6 +500,17 @@ _
 in a pattern and cannot be used in expressions
 ]
 
+--
+
+### Catchall in `case`
+
+```elixir
+case response do
+  {:ok, body} -> body
+* _           -> nil
+end
+```
+
 ---
 
 # Underscore - prefix `_var`
@@ -608,6 +619,7 @@ end
 ```elixir
 def find_user(key) when is_number(key), do: User.find(key)
 def find_user(key) when is_binary(key), do: User.find_by(email: key)
+def find_user(_),                       do: {:error, :invalid_key_type}
 ```
 
 ---
