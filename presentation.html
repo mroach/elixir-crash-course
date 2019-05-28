@@ -156,9 +156,19 @@ class: center, middle
   * Concepts
   * Tools
 
+???
+
+Targeted to Ruby developers
+
 --
 
 * Get excited? 😬
+
+???
+
+***
+
+Hope you enjoy what you see and get curious to try it out.
 
 ---
 class: center, middle, inverse
@@ -181,7 +191,13 @@ layout: true
 * Developed by Ericsson in 1986 🇸🇪
 * Platform for telecom equipment
 * Open-sourced in 1998
-* Maintained by Ericsson
+* Still maintained by Ericsson and the community
+
+???
+
+Before we talk about Elixir, we should talk about Erlang
+
+You'll often hear mentions of Erlang in the community
 
 --
 
@@ -190,6 +206,16 @@ layout: true
 * Distributed
 * Real-time system
 * Fault-tolerant
+
+???
+
+### Phone systems can't have:
+
+* Delays
+* Errors crashing the whole system
+* Upgrades disconnecting users
+
+### Also not bad ideas for web apps
 
 ---
 
@@ -202,7 +228,16 @@ layout: true
 * Runs on the BEAM virtual machine
 
 ???
-Bogdan or Björns's Erlang Abstract Machine
+
+* Bogdan or Björns's Erlang Abstract Machine
+* HTTP
+* process management
+* hardware monitoring
+* ETS
+* Supervision
+* Debugger
+
+A language without components is...JavaScript
 
 ---
 
@@ -214,8 +249,19 @@ Bogdan or Björns's Erlang Abstract Machine
 * Functional
 * Strongly typed
 * Runs on the BEAM
+* Syntax inspired by Ruby
 * Created by José Valim in 2011 🇧🇷
 
+--
+
+#### Stack Overflow Developer Survey - 2019
+
+* 8th most *Loved* (Ruby was 21st)
+* 5th best *Paying* (nearly tied with Ruby)
+
+???
+
+Ruby was 6th for *pay*
 
 ---
 class: center, middle, inverse
@@ -230,11 +276,15 @@ layout: true
 ---
 class: center, middle
 
-# Let data be data
+# "Let data be data"
 
 ???
 
 * Data doesn't have behavior
+  * Order doesn't ship itself
+  * Email doesn't send itself
+* Actors do these things to data
+* We'll come back to this, but keep it in mind
 
 ---
 
@@ -251,6 +301,12 @@ name.downcase!
 name
 => "björn"
 ```
+
+???
+
+* Ruby mutations cause side effects outside of functions
+
+--
 
 #### Elixir
 
@@ -274,6 +330,12 @@ name
 parse(File.read("src.txt").lines.first.strip)
 ```
 
+???
+* What type does each function return?
+* `String`, `Array`, `String`, `String`
+
+--
+
 #### Elixir
 
 ```elixir
@@ -286,17 +348,25 @@ parse(File.read("src.txt").lines.first.strip)
 |> parse()
 ```
 
+???
+* We'll get into pipeline syntax later
+* We can easily see the types based on the module
+
 ---
 class: center, middle, inverse
 layout: false
 
-# Syntax
+# Syntax and Types
+
+???
+
+We'll compare syntax and types to Ruby and talk about new ways of doing things
 
 ---
 template: default
 layout: true
 
-### Syntax
+### Syntax and Types
 
 ---
 
@@ -312,22 +382,33 @@ layout: true
 ]
 ]
 
+???
+* These are not exact analogues
+
 --
 
 .cols[
 .col[
 `Hash`
 ```ruby
-{ id: 1, name: "Bob" }
+{id: 1, name: "Bob"}
+{"User ID" => 1, "Full Name" => "Bob"}
 ```
 ]
 .col[
 `Map`
 ```elixir
-%{ id: 1, name: "Bob" }
+%{id: 1, name: "Bob"}
+%{"User ID" => 1, "Full Name" => "Bob"}
 ```
 ]
 ]
+
+???
+
+### [Map](https://hexdocs.pm/elixir/Map.html)
+
+* Keys by default are atoms, but can be any type when using "hash rocket"
 
 --
 
@@ -345,6 +426,13 @@ layout: true
 ```
 ]
 ]
+
+???
+
+### [List](https://hexdocs.pm/elixir/List.html)
+
+* Linked lists of undetermined sizes
+* Each item is "this value, pointer to next value"
 
 --
 
@@ -378,6 +466,12 @@ layout: true
 ]
 ]
 
+???
+
+### [Tuple](https://hexdocs.pm/elixir/Tuple.html)
+
+* Fixed-size container of values
+
 ---
 
 # Comparison of types
@@ -390,6 +484,12 @@ User = Struct.new(:id, :name, :admin)
 bob = User.new(1, "Bob", true)
 ```
 
+???
+
+Elixir has no `Class`, so `Struct` is a better comparison
+
+--
+
 #### Elixir
 
 ```elixir
@@ -400,17 +500,37 @@ end
 bob = %User{id: 1, name: "Bob", admin: true}
 ```
 
+???
+
+### Elixir Struct
+
+* Commonly used to model data
+* Ensures valid, consistent keys
+* Supports default values
+* Can enforce key presence
+
 ---
 
 # Pattern matching
+
+???
+
+* Core feature of Erlang and Elixir
+* Might take time to get up to speed
+* Once you get it, you won't want to live without it
 
 --
 
 ```elixir
 name = "Bob"
+=> "Bob"
+
 name
 => "Bob"
 ```
+
+???
+In algebra, think `x = 1`
 
 --
 
@@ -424,6 +544,12 @@ name
 ```elixir
 %{admin: false} = %{name: "Bob", admin: true}
 ```
+
+???
+
+### No match
+
+What happens?
 
 --
 
@@ -445,6 +571,19 @@ layout: true
 ```elixir
 %{name: name} = %{name: "Bob", admin: true}
 ```
+
+???
+
+* Both sides are maps. That matters! (Otherwise, no match)
+* Data on the right, pattern on the left
+* Notice we have a variable on the left side for `name`
+
+--
+
+
+```elixir
+=> %{admin: true, name: "Bob"}
+```
 --
 ```elixir
 name
@@ -459,16 +598,35 @@ name
 name = "Steve"
 %{name: name} = %{name: "Bob", admin: true}
 ```
+
+???
+
+This is a match again. No problem.
 --
 ```elixir
 name
 => "Bob"
 ```
 
+???
+* This may be surprising. Elixir does "variable re-binding"
+* Only does it if the variable is on the left
+* Let's try again with pinning
+
+--
+
 ```elixir
 name = "Steve"
 %{name: ^name} = %{name: "Bob", admin: true}
 ```
+
+???
+
+### Pinned
+
+* Notice the caret before `name`
+* So now what do you think we get?
+
 --
 
 .error[
@@ -491,11 +649,15 @@ name = "Steve"
 _ = %{name: "Bob", admin: true}
 _
 ```
+--
 .error[
 ** (CompileError) iex:13: invalid use of \_. "\_" represents a value to be ignored
 in a pattern and cannot be used in expressions
 ]
 
+???
+
+We tried to reference the `_` on line 2
 --
 
 ### Catchall in `case`
@@ -506,6 +668,10 @@ case response do
 * _           -> nil
 end
 ```
+
+???
+
+Here's a practical example. If we don't get an `{:ok, _}`, tuple, catchall.
 
 ---
 
@@ -543,6 +709,10 @@ def show(conn, params) do
 end
 ```
 
+???
+
+Common example from Phoenix controller
+
 --
 
 .warning[
@@ -563,7 +733,7 @@ end
 
 ---
 
-# Method arguments
+# Function arguments
 
 --
 
@@ -578,15 +748,33 @@ def can_edit?(user, record)
 end
 ```
 
+???
+
+#### Ruby
+
+Common pattern of guarding in Ruby
+
 --
 
 #### Elixir
 
 ```elixir
-def can_edit?(%User{admin: true}, _),      do: true
-def can_edit?(%User{id: uid}, %{id: rid}), do: uid == rid
-def can_edit?(_),                          do: false
+def can_edit?(user, record)
+def can_edit?(%User{admin: true}, _),            do: true
+def can_edit?(%User{id: uid}, %{owner_id: oid}), do: uid == oid
+def can_edit?(_),                                do: false
 ```
+
+???
+
+#### Elixir
+
+* Optionally declare a function head (good for documentation)
+* Pattern matching in arguments
+* **Functions are executed in order**
+* Compiler warning if one function causes others to never execute
+* Inline body
+* Catchall/cleanup/default rule (like firewall rules)
 
 ---
 
@@ -603,7 +791,7 @@ def find_user(key)
   elsif key.is_a?(Integer)
     User.find(key)
   else
-    raise ArgumentError, "Don't know how to find a user by #{ key.class }"
+    raise ArgumentError, "Don't know how to find a user by #{key.class}"
   end
 end
 ```
@@ -618,20 +806,33 @@ def find_user(key) when is_binary(key), do: User.find_by(email: key)
 def find_user(_),                       do: {:error, :invalid_key_type}
 ```
 
+???
+
+Guards can only use `Kernel` functions and simple operators
+* `==`, `!=`, `===`, `!==`, `>`, `>=`, `<`, `<=`
+* `and`, `or`, `not`
+* `+`, `-`, `*`, `/`
+* type check functions (`is_map`, `is_list`, ...)
+* `abs`, `map_size`, `length`
+
 ---
 
 # Guards
 
-> User can't order more than 10 or more than we have in stock
+???
+
+* Can't order more than 10
+* Can't order a negative number
+* Can't order more than we have in stock
 
 --
 
 #### Ruby
 
 ```ruby
-def valid_quantity?(qty, available)
-  return false if qty < 0
-  return false if qty > 10
+def valid_quantity?(requested, available)
+  return false if requested < 0
+  return false if requested > 10
   amount <= available
 end
 ```
@@ -641,10 +842,14 @@ end
 #### Elixir
 
 ```elixir
-def valid_quantity?(amount, _) when amount < 0,  do: false
-def valid_quantity?(amount, _) when amount > 10, do: false
-def valid_quantity?(amount, available),          do: amount <= available
+def valid_quantity?(requested, _) when requested < 0,  do: false
+def valid_quantity?(requested, _) when requested > 10, do: false
+def valid_quantity?(requested, available),             do: requested <= available
 ```
+
+???
+
+With higher complexity, the value of this strategy becomes pronounced.
 
 ---
 
@@ -657,11 +862,14 @@ layout: true
 
 # Pipe `|>`
 
+???
+
+> We've already seen a bit of it
+
 --
 
 * Addresses nesting mess with functional programming
-* Send value as first function argument
-* Output of one function is the first argument for the next
+* Output of one statement is the first argument for the next
 
 --
 
@@ -670,6 +878,12 @@ layout: true
 ```elixir
 parse(String.trim(Enum.at(String.split(File.read!("src.txt"), "\n"), 0)))
 ```
+
+???
+
+### Without pipes
+
+* You'd have to write functional code like this. Also in Ruby!
 
 --
 
@@ -684,6 +898,15 @@ parse(String.trim(Enum.at(String.split(File.read!("src.txt"), "\n"), 0)))
 |> parse()
 ```
 
+???
+
+### With pipes
+
+* Clear which modules are doing what
+* No question about the types
+* Easy to add/remove pipe segments
+* No need to monkeypatch objects to setup chains/pipelines
+
 --
 
 ```elixir
@@ -691,10 +914,103 @@ parse(String.trim(Enum.at(String.split(File.read!("src.txt"), "\n"), 0)))
 ```
 
 ---
+template: default
+layout: true
+
+### Putting it Together
+
+---
+
+#### Ruby
+
+```ruby
+class Animal
+  attr_reader :name
+
+  def initialize(name)
+    @name = name
+  end
+
+  def speak
+    "#{self.says}! My name is #{self.name}"
+  end
+end
+
+class Dog < Animal
+  def says
+    "Woof"
+  end
+end
+
+class Cat < Animal
+  def says
+    "Obey me"
+  end
+end
+
+Dog.new("Bob").speak
+=> "Woof! My name is Bob"
+```
+
+???
+
+* `Animal` is a base class. Doesn't really do anything on its own.
+* Has some behaviour with `speak`
+
+---
+
+#### Elixir
+
+```elixir
+defmodule Animal do
+  @enforce_keys [:name]
+  defstruct [:name, :says]
+
+  def dog(name), do: %Animal{name: name, says: "Woof"}
+
+  def cat(name), do: %Animal{name: name, says: "Obey me"}
+end
+
+defmodule Speaker do
+  def speak(%{name: name, says: says}) do
+    "#{says}! My name is #{name}"
+  end
+  def speak(_), do: "Sorry, don't know how you speak!"
+end
+```
+
+```elixir
+"Lucifer" |> Animal.cat |> Speaker.speak
+=> "Obey me! My name is Lucifer"
+```
+
+```elixir
+%{name: "Edwin", says: "merp"} |> Speaker.speak
+"merp! My name is Edwin"
+```
+
+???
+
+## Animal
+
+* It is just data. No behaviour
+* The `dog` and `cat` functions help create some data for us
+
+## Speaker
+
+* Actor
+* Doesn't care what the data is as long as it has a `name` and `says` attributes
+* Functions with the same arity grouped together
+
+---
 layout: false
 class: center, middle, inverse
 
 # Conventions
+
+???
+
+Not rules, but standards in Elixir and popular libraries
 
 ---
 template: default
@@ -737,6 +1053,9 @@ File.read("src.txt")
 * Usually easier to deal with errors as data
 * Use `raise` when it *should* crash a process
 
+???
+
+So what do we do instead?
 
 ---
 
@@ -754,14 +1073,37 @@ File.read("/nope")
 => {:error, :enoent}
 ```
 
+--
+
+### Example usage
+
+```elixir
+case File.read(path) do
+  {:ok, text} ->
+    text
+
+  {:error, reason} ->
+    Logger.warn("Failed to open #{path}: #{reason}")
+    nil
+end
+```
+
+???
+
+Now we can easily pattern match!
+
 ---
 
-# Errors - `!` methods
+# Errors - `!` functions
 
 ```elixir
 File.read!("src.txt")
 => "file contents"
 ```
+
+???
+
+By convention, these do raise errors when they fail
 
 --
 
@@ -807,8 +1149,15 @@ layout: true
 | MiniTest | ExUnit |
 | Yard | ExDoc |
 | Rubocop | Credo |
-| HTTParty | Tesla |
 ]
+
+???
+
+* Phoenix is a "connectivity" framework
+* Ecto has much different ways of interacting with your data
+* RSpec is not the Elixir way
+* ExDoc is a first-class citizen
+* Credo has a better signal:noise ratio
 
 ---
 layout: false
@@ -826,27 +1175,32 @@ layout: true
 
 # Doc Tests
 
+???
+
+* Keeps your documentation up-to-date and accurate
+* All Markdown
+
 --
 
 ```elixir
 @doc """
-Indicates if the \`quantity` requested is valid given constraints and how many
+Indicates if the \`requested` quantity is valid given constraints and how many
 of the product are \`available` to be purchased.
 
-#### Example:
-  iex> Order.valid_quantity?(-1, 10)
-  false
+### Example:
+    iex> Order.valid_quantity?(-1, 10)
+    false
 
-  iex> Order.valid_quantity?(900, 10)
-  false
+    iex> Order.valid_quantity?(900, 10)
+    false
 
-  iex> Order.valid_quantity?(5, 10)
-  true
+    iex> Order.valid_quantity?(5, 10)
+    true
 """
-def valid_quantity?(quantity, _) when quantity < 0,  do: false
-def valid_quantity?(quantity, _) when quantity > 10, do: false
-def valid_quantity?(quantity, available) do
-  quantity <= available
+def valid_quantity?(requested, _) when requested < 0,  do: false
+def valid_quantity?(requested, _) when requested > 10, do: false
+def valid_quantity?(requested, available) do
+  requested <= available
 end
 ```
 
@@ -859,24 +1213,40 @@ defmodule OrderTest do
 end
 ```
 
+???
+
+* Add one line to your unit tests
+
 ---
 
 # Type Specs
 
 ```elixir
 defmodule Project do
-  @spec percent_complete(integer(), integer()) :: non_neg_integer()
+  @doc "Calculates whole-number percentage of tasks completed"
+* @spec percent_complete(integer(), integer()) :: non_neg_integer()
   def percent_complete(completed_tasks, total_tasks) do
-    completed_tasks / total_tasks * 100
+    completed_tasks * 100 / total_tasks
   end
 end
 ```
+
+???
+
+* Not enforced by the compiler
+
+--
 
 ### Dialyzer
 
 ```bash
 mix dialyzer
 ```
+
+???
+
+* Optionally checked by Dialyzer
+* **Any guesses what's wrong?**
 
 --
 
@@ -894,9 +1264,34 @@ Success typing:
 
 # Metaprogramming
 
+* No monkeypatching in Elixir
+* Macros inject code into the AST
+
+--
+
+```elixir
+@properties ~w(id name email)a
+
+for prop <- @properties do
+  def unquote(prop)(map), do: Map.get(map, unquote(prop))
+end
+```
+
+???
+
+`~w()a` creates a list of atoms, like `%i[]` in Ruby
+
+--
+
+This is the tip of the iceberg.
+
 ---
 
 # Protocols and Behaviours
+
+???
+
+* Similar to `Interface`s in Java and C#
 
 ---
 
@@ -912,8 +1307,6 @@ layout: false
 class: center, middle, inverse
 
 # Thank You!
-
----
 
     </textarea>
     <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
