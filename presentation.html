@@ -305,6 +305,7 @@ name
 ???
 
 * Ruby mutations cause side effects outside of functions
+* Crude, but example of object modifying itself
 
 --
 
@@ -351,6 +352,56 @@ parse(File.read("src.txt").lines.first.strip)
 ???
 * We'll get into pipeline syntax later
 * We can easily see the types based on the module
+
+---
+
+# Explicit over implicit
+
+#### Object-oriented
+
+```ruby
+Order.find!(1).mark_as_paid!.send_receipt!
+```
+
+???
+
+* This is generally psuedocode, but it's pretty much Ruby and Elixir
+* What is going on here? Is it all the same object?
+  * Talking to database
+  * Mutating itself
+  * Has some email logic built in?
+* This type is often hailed as a _good_ way to do things
+* Yes, you can do OOP without this style
+
+--
+
+#### Functional
+
+```elixir
+order = SalesRepo.get_order!(1)
+paid_order = Order.mark_as_paid(order)
+SalesRepo.save!(paid_order)
+
+email = EmailReceiptBuilder.create_payment_receipt(paid_order)
+MailService.deliver(email)
+```
+
+--
+
+##### Distinct responsibilities:
+
+* `SalesRepo` - Talk to the database
+* `Order` - Transform an order
+* `EmailReceiptBuilder` - Create receipt emails
+* `MailService` - SMTP/mail service client. Sends messages
+
+???
+
+* A bit more verbose, but this is easy to clean up in Elixir
+* This is more Rails vs Ecto
+* `SalesRepo` manages access to the data
+* `EmailReceiptBuilder` has a single job. Creates receipts based on orders
+* `MailService` has one job. Delivers messages.
 
 ---
 class: center, middle, inverse
@@ -513,7 +564,10 @@ bob = %User{id: 1, name: "Bob", admin: true}
 
 # Pattern matching
 
+
 ???
+
+> Like regular expressions -- but for data
 
 * Core feature of Erlang and Elixir
 * Might take time to get up to speed
@@ -568,11 +622,15 @@ layout: true
 
 # Destructuring
 
+--
+
 ```elixir
 %{name: name} = %{name: "Bob", admin: true}
 ```
 
 ???
+
+> Like regex captures!
 
 * Both sides are maps. That matters! (Otherwise, no match)
 * Data on the right, pattern on the left
@@ -584,11 +642,19 @@ layout: true
 ```elixir
 => %{admin: true, name: "Bob"}
 ```
+
+???
+Result is simply the data that matched
+
 --
+
 ```elixir
 name
 => "Bob"
 ```
+
+???
+`name` was bound to the value it matched
 
 ---
 
@@ -601,7 +667,10 @@ name = "Steve"
 
 ???
 
+> Like putting variables into your regex
+
 This is a match again. No problem.
+
 --
 ```elixir
 name
@@ -671,6 +740,8 @@ end
 
 ???
 
+## Practical example
+
 Here's a practical example. If we don't get an `{:ok, _}`, tuple, catchall.
 
 ---
@@ -695,11 +766,13 @@ _bob
 warning: the underscored variable "_bob" is used after being set. A leading underscore indicates that the value of the variable should be ignored. If this is intended please rename the variable to remove the underscore
 ]
 
+???
+
+### Practical example next
+
 ---
 
 # Underscore - prefix `_var`
-
-* Compiler detects unused variables and warns
 
 --
 
@@ -711,7 +784,10 @@ end
 
 ???
 
-Common example from Phoenix controller
+### Common example from Phoenix controller
+
+* Every *action* takes a connection and the parameters
+* The function is complying to a contract, but it doesn't need the params.
 
 --
 
@@ -720,8 +796,6 @@ warning: variable "params" is unused (if the variable is not meant to be used, p
 ]
 
 --
-
-***
 
 ```elixir
 *def show(conn, _params) do
@@ -734,6 +808,10 @@ end
 ---
 
 # Function arguments
+
+???
+
+Let's talk about pattern matching in function arguments
 
 --
 
@@ -762,19 +840,27 @@ Common pattern of guarding in Ruby
 def can_edit?(user, record)
 def can_edit?(%User{admin: true}, _),            do: true
 def can_edit?(%User{id: uid}, %{owner_id: oid}), do: uid == oid
-def can_edit?(_),                                do: false
+def can_edit?(_, _),                             do: false
 ```
 
 ???
 
 #### Elixir
 
-* Optionally declare a function head (good for documentation)
+* Optionally declare a function head (good for documentation and readability)
 * Pattern matching in arguments
-* **Functions are executed in order**
-* Compiler warning if one function causes others to never execute
 * Inline body
+* **Functions are evaluated in order**, first match wins
+* Compiler warning if one function causes others to never execute
 * Catchall/cleanup/default rule (like firewall rules)
+  * In this case it would catch things like `nil`
+  * Notice the matching arity
+
+--
+
+.warning[
+warning: this clause cannot match because a previous clause at line 2 always matches
+]
 
 ---
 
@@ -849,7 +935,8 @@ def valid_quantity?(requested, available),             do: requested <= availabl
 
 ???
 
-With higher complexity, the value of this strategy becomes pronounced.
+* With higher complexity, the value of this strategy becomes pronounced.
+* You can also `defguard` to DRY up guards
 
 ---
 
@@ -954,6 +1041,7 @@ Dog.new("Bob").speak
 
 ???
 
+* Classic inheritance example from OOP
 * `Animal` is a base class. Doesn't really do anything on its own.
 * Has some behaviour with `speak`
 
@@ -1022,11 +1110,11 @@ layout: true
 
 # Return values
 
-> Common patterns when there may be side effects
+### Common patterns when there may be side effects
 
 --
 
-#### NOOP - `:ok`
+#### Void - `:ok`
 
 ```elixir
 File.touch("/tmp/log.txt")
@@ -1035,7 +1123,7 @@ File.touch("/tmp/log.txt")
 
 --
 
-#### Fetch - `{:ok, data}`
+#### Return value - `{:ok, value}`
 
 ```elixir
 File.read("src.txt")
@@ -1103,7 +1191,8 @@ File.read!("src.txt")
 
 ???
 
-By convention, these do raise errors when they fail
+* By convention, these do raise errors when they fail
+* There should be a corresponding non-`!` method
 
 --
 
@@ -1117,6 +1206,10 @@ layout: false
 class: center, middle, inverse
 
 # Tools, Frameworks, Libraries
+
+???
+
+Just to get you familiar with the terms
 
 ---
 template: default
@@ -1140,6 +1233,8 @@ layout: true
 ---
 
 # Frameworks and Libraries
+
+### but typically differing philosophies
 
 .full.striped.padded.table[
 | Ruby | Elixir |
@@ -1177,8 +1272,10 @@ layout: true
 
 ???
 
+* Documentation is a first-class component of Elixir apps
 * Keeps your documentation up-to-date and accurate
 * All Markdown
+* Generates great HTML
 
 --
 
